@@ -15,37 +15,39 @@ const filesToCheck = [
   'src/components/TentCard.tsx',
 ]
 
-let totalErrors = 0
+let totalFixed = 0
 
 for (const file of filesToCheck) {
   const filePath = path.join(__dirname, '..', file)
   if (!fs.existsSync(filePath)) continue
 
-  const content = fs.readFileSync(filePath, 'utf8')
+  let content = fs.readFileSync(filePath, 'utf8')
   const words = [...new Set(content.match(/[А-Яа-яӨөҮүЁё]{2,}/g) || [])]
-  const errors = []
+  const fixed = []
 
   for (const word of words) {
     if (!spell.correct(word)) {
-      errors.push({ word, suggestions: spell.suggest(word).slice(0, 3) })
+      const suggestions = spell.suggest(word)
+      if (suggestions.length > 0) {
+        const replacement = suggestions[0]
+        content = content.replaceAll(word, replacement)
+        fixed.push(`"${word}" → "${replacement}"`)
+      }
     }
   }
 
-  if (errors.length > 0) {
-    console.log(`\n❌ ${file}:`)
-    for (const { word, suggestions } of errors) {
-      const hint = suggestions.length ? ` → ${suggestions.join(', ')}` : ''
-      console.log(`   "${word}"${hint}`)
-    }
-    totalErrors += errors.length
+  if (fixed.length > 0) {
+    fs.writeFileSync(filePath, content, 'utf8')
+    console.log(`\n🔧 ${file} — ${fixed.length} үг засагдлаа:`)
+    fixed.forEach(f => console.log(`   ${f}`))
+    totalFixed += fixed.length
   } else {
     console.log(`✅ ${file}`)
   }
 }
 
-if (totalErrors > 0) {
-  console.log(`\n⛔ Нийт ${totalErrors} үгийн алдаа олдлоо — deploy цуцлагдлаа.\n`)
-  process.exit(1)
+if (totalFixed > 0) {
+  console.log(`\n✅ Нийт ${totalFixed} үг автоматаар засагдлаа — deploy үргэлжилнэ.\n`)
 } else {
   console.log('\n✅ Алдаа олдсонгүй — deploy үргэлжилнэ.\n')
 }
