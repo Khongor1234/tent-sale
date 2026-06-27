@@ -1,5 +1,12 @@
 const fs = require('fs')
 const path = require('path')
+
+// Vercel дээр spell check алгасана — зөвхөн локалд ажиллана
+if (process.env.VERCEL) {
+  console.log('⏭️  Vercel build — spell check алгасана')
+  process.exit(0)
+}
+
 const nspell = require('nspell')
 
 const dictDir = path.join(__dirname, '../node_modules/dictionary-mn')
