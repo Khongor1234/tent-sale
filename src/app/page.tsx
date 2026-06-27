@@ -1,5 +1,4 @@
 import TentCard from "@/components/TentCard"
-import SpellChecker from "@/components/SpellChecker"
 import { tents } from "@/data/tents"
 
 export default function Home() {
@@ -55,11 +54,6 @@ export default function Home() {
           ))}
         </div>
       </main>
-
-      {/* Spell checker */}
-      <div className="max-w-6xl mx-auto px-4 pb-8">
-        <SpellChecker />
-      </div>
 
       {/* Хөл хэсэг */}
       <footer className="bg-gray-800 text-gray-400 text-center py-6 text-xs mt-8">
